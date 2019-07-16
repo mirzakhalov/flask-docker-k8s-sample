@@ -17,34 +17,8 @@
      * kubectl describe nodes (note the 'External IP' on one of the nodes)
      * curl *|external_ip|*:*|port|*/noop (port will be chosen in service.yml e.g. 30001)
 
-* To setup ingress:
-     * Create a namespace and a service account for the Ingress controller:
-          ```
-               kubectl apply -f k8s/ingress/ns-and-sa.yaml
-          ```
-     * Create a secret with a TLS certificate and a key for the server in NGINX (you should generate your own certificate and replace it. Here is the easiest way: https://github.com/kingkool68/generate-ssl-certs-for-local-development):
-          ```
-               kubectl apply -f k8s/https/secret.yaml
-          ```
-     * Create a config map for customizing NGINX configuration
-          ```
-               kubectl apply -f k8s/ingress/nginx-config.yaml
-          ```
-     * Deploy the ingress controller
-          ```
-               kubectl apply -f k8s/ingress/nginx-ingress.yaml
-          ```
-     * Create a service with the type NodePort
-          ```
-               kubectl apply -f k8s/ingress/nodeport.yaml
-          ```
-     * Finally, create an Ingress resource
-          ```
-               kubectl apply -f k8s/ingress/ingress/yaml
-          ```
 
-Now, you can access your service using the hostname provided in your ingress.yaml file. 
-e.g `curl example.us-south.containers.appdomain.cloud/noop`
+You can setup the ingress to work with your service. Then, you can access your service using the hostname provided in your ingress.yaml file. e.g `curl example.us-south.containers.appdomain.cloud/noop`
 
 
 ## Structure of the project

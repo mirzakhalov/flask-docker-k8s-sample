@@ -22,7 +22,7 @@ def notify():
         ss.create_status(job_id, "202", False, 'Accepted', body)
         
         # start up a thread for this action and return the jobid to the requester
-        action = threading.Thread(target=ss.do, args=())
+        action = threading.Thread(target=ss.do, args=(None, job_id))
         action.start()
     
     return jsonify(ss.get_status(job_id))

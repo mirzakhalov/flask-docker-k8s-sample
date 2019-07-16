@@ -77,6 +77,6 @@ def create_status(job_id, status, done, message, request):
         json.dump(data, lockfile)
 
 
-def do(job_id):
+def do(self, job_id):
     print('Your function goes here')
     update_status(job_id, '201', True, 'Done')

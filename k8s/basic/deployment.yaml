@@ -41,7 +41,7 @@ spec:
         - containerPort: 5000
         volumeMounts:
         # need to be chosen according to your app needs
-        - mountPath: 'var/lib/volume'
+        - mountPath: 'jobs/'
           name: pvc-sample
       dnsPolicy: ClusterFirst
       restartPolicy: Always
