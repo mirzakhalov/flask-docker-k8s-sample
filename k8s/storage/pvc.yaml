@@ -1,0 +1,15 @@
+# this Persistent Volume Claim(PVC) is directly connected to IBM Cloud services, so it can provision itself storage
+# if you have the same setup, there is no need for defining Persistent Volume (PV)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-sample
+  labels:
+     billingType: "monthly"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ibmc-file-bronze

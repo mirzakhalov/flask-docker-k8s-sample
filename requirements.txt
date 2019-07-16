@@ -1,0 +1,6 @@
+flask
+flask_restful
+flask_httpauth
+pytest
+pytest-cov
+pytest-dependency

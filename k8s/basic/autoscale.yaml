@@ -1,0 +1,58 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  creationTimestamp: "2019-04-30T20:02:06Z"
+  name: flask-docker-k8s
+  namespace: default
+  resourceVersion: "5292641"
+  selfLink: /apis/autoscaling/v2beta2/namespaces/default/horizontalpodautoscalers/notification-deploy
+  uid: d49e00b4-6b82-11e9-971e-7a4c09913963
+spec:
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+
+  - resource:
+      name: memory
+      target:
+        averageUtilization: 45
+        type: Utilization
+    type: Resource
+
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: notification-deploy
+status:
+  conditions:
+  - lastTransitionTime: "2019-04-30T20:02:21Z"
+    message: recommended size matches current size
+    reason: ReadyForNewScale
+    status: "True"
+    type: AbleToScale
+  - lastTransitionTime: "2019-04-30T20:02:21Z"
+    message: the HPA was able to successfully calculate a replica count from cpu resource
+      utilization (percentage of request)
+    reason: ValidMetricFound
+    status: "True"
+    type: ScalingActive
+  - lastTransitionTime: "2019-04-30T20:02:21Z"
+    message: the desired count is within the acceptable range
+    reason: DesiredWithinRange
+    status: "False"
+    type: ScalingLimited
+  currentMetrics:
+  - resource:
+      current:
+        averageUtilization: 2
+        averageValue: 5m
+      name: cpu
+    type: Resource
+  currentReplicas: 1
+  desiredReplicas: 1

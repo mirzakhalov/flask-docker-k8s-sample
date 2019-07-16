@@ -1,0 +1,26 @@
+language: python
+python:
+  - "3.6"
+install: "pip install -r requirements.txt"
+script: python -m pytest .
+services:
+- docker
+script: "echo 'Building Docker image with tags'"
+after_success:
+  - export DEPLOY_TIMESTAMP=`date +'%Y%m%d-%H%M%S'`
+  # Creating a custom tag for the docker image in addition to the default "latest" tag.
+  # The custom tag will help us to quickly identify the current image running in the kubernetes cluster with the metadata.
+  # The format for the custom tag is "demo:$DEPLOY_TIMESTAMP-$TRAVIS_BUILD_NUMBER-$TRAVIS_BRANCH"
+  # For example: demo:20190405-171003-4-master where '20190405-171003' is the date and time when the image was built,
+  # '4' is the travis build number and 'master' is the name of the branch from the Github repo from which the image was built.
+  - docker build -t  flask-docker-k8s:$DEPLOY_TIMESTAMP-$TRAVIS_BUILD_NUMBER-$TRAVIS_BRANCH -t  flask-docker-k8s:latest .
+
+deploy:
+  # You can specify additional Github branches as well
+  - provider: script
+    skip_cleanup: false
+    # script: chmod +x ./scripts/* && ./scripts/execute.sh <Cluster Namespace> <Container Registry Namespace>
+    script: chmod +x ./scripts/* && ./scripts/execute.sh fss-dev  mirzakhalov
+    on:
+branch: master
+

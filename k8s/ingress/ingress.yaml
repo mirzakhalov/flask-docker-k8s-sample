@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: flask-ingress
+spec:
+  tls:
+  - hosts:
+    - example.us-south.containers.appdomain.cloud
+    secretName: flask-secret
+  rules:
+  # you get this from your cloud provider. This example is from IBM Cloud
+  - host: example.us-south.containers.appdomain.cloud
+    http:
+      paths:
+      - path: /jobs
+        backend:
+          serviceName: flask-docker-k8s-service
+          servicePort: 5000
+      - path: /noop 
+        backend:
+          serviceName: flask-docker-k8s-service
+          servicePort: 5000
