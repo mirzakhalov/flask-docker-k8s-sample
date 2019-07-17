@@ -15,6 +15,9 @@ def notify():
 
     # in case request comes with json body
     body = request.get_json()
+    # in case request body is required, use this
+    # if body == None:
+    #   return make_response('Bad request', 400)
 
     job_id = ss.create_job_id()
     # create a folder for this job id. It returns true if the creation was successful

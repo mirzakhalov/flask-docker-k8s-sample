@@ -1,10 +1,11 @@
 # Sample Flask Project with standard DevOps structure wrapped as a Docker container and deployed to K8S on IBM Cloud 
 
-* To run the project locally: (Python 3.0+)
-     * pip install -r requirements.txt
-     * python app.py
-     * curl localhost:5000/noop (return nothing)
-     * curl -X POST localhost:5000/jobs
+* To run the project locally: (Python 3.0+). Add any libraries you use inside requirements.txt
+
+        pip install -r requirements.txt
+        python app.py
+        curl localhost:5000/noop (returns nothing)
+        curl -X POST localhost:5000/jobs
 
 * Build and push the project to Image Registry (in this case IBM Cloud)
     
@@ -12,27 +13,24 @@
         docker push *|name|* *|remote_host|*
     
 * Update the `app, name` fields in all .yaml files along with the `container and remote host names`
-* Now, setup access to your K8S Cluster from your cluster. We are using `kubectl' in this case
+* Now, setup access to your K8S Cluster from your cluster. We are using `kubectl` in this case
 
         ibmcloud login -a cloud.ibm.com -r us-south -g default -sso
         ibmcloud ks cluster-config --cluster <cluster-name>
         export ...
         kubectl get nodes
         
-* Create a Persisten Volume Claim. Make sure your account has access to IBM Storage and your pvc file has been configured. This will take a couple of minutes. Wait until it finishes.
+* Create a Persistent Volume Claim. Make sure your account has access to IBM Storage and your pvc.yaml file has been configured. PVC creation will take a couple of minutes. Wait until it finishes.
 
-        
         kubectl apply -f k8s/storage/pvc.yaml.
         
-* Apply deployment and service files to K8S. Make sure all `name, app` fields are changed to your preference. 
+* Apply deployment and service files to K8S. Make sure all `name, app` fields are changed according to your preference. 
 
-        
         kubectl apply -f k8s/basic/deployment.yaml
         kubectl apply -f k8s/basic/service.yml
         
-* To run the project, use External IP of one of the nodes and a service PORT that you defined. Port is defined in service.yaml. Change Port number if it collides with other service.
+* To run the project, use External IP of one of the nodes and a service PORT that you defined in your service.yaml file. Change Port number if it collides with another service.
 
-        
         kubectl describe nodes
         curl *|external_ip|*:*|port|*/noop
         
@@ -42,13 +40,13 @@ You can setup the ingress to work with your service. Then, you can access your s
 
 ## Structure of the project
 
-Notification Service uses *synchronous job id* schema in which a request that has been received will be assigned a job id and started off as a separate thread. Job ID will be returned to the client synchronously. Client can check the status of the job, by invoking '/jobs/*|job_id|*'. Within the system, job gets tracked using a status.txt file which gets updated every time a new phase of the execution kicks in. 
+Notification Service uses *synchronous job id* schema in which a request that has been received will be assigned a job id and started off as a separate thread. Job ID will be returned to the client synchronously (immediately). Client can check the status of the job, by invoking '/jobs/*|job_id|*'. Within the system, job gets tracked using a status.txt file which gets updated every time a new phase of the execution kicks in. 
 
 ## Structure of the Cloud Deployment
 
-pvc.yaml - Stands for Persistent Volume Claim. This uses the admin account to provision storage on IBM Cloud Storage with NFS Provisioning. This way, there is no need to manually allocate new PVs. Once the storage is provisioned, PVC also authorizes itself to access the storage, which is transitive to the Deployments that implement this PVC
+pvc.yaml - Stands for Persistent Volume Claim. This uses the admin account to provision storage on IBM Cloud Storage with NFS Provisioning. This way, there is no need to manually allocate new PVs. Once the storage is provisioned, PVC also authorizes itself to access the storage, which is transitive to the Deployments that implement this PVC.
 
-deployment.yaml - Creates as many apods as specified in the file, as well as attaching PVC and setting up a mount path. Remote host of the Docker image that needs to be loaded also has to be specified in this file, along with which port will expose your server locally.
+deployment.yaml - Creates as many pods as specified in the file, as well as does attaching PVC and setting up a mount path. Remote host of the Docker image that needs to be loaded also has to be specified in this file, along with which port will expose your server locally.
 
 service.yml - Exposes your deployment/pods to the outside world. 5 digit port number can be specified as the access point to a specific deployment under the field NodePort. There is also a field with the name 'Port' which refers the local port that serves inside the container. i.e 5000 for Flask. 
 
