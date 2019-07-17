@@ -78,5 +78,8 @@ def create_status(job_id, status, done, message, request):
 
 
 def do(self, job_id):
-    print('Your function goes here')
-    update_status(job_id, '201', True, 'Done')
+    try:
+        print('Your function goes here')
+        update_status(job_id, '201', True, 'Done')
+    except Exception as e:
+        update_status(job_id, '500', False, str(e))

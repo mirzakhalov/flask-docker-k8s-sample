@@ -6,17 +6,34 @@
      * curl localhost:5000/noop (return nothing)
      * curl -X POST localhost:5000/jobs
 
-* To deploy the project to K8S:
-     * docker built -t *|name|* .
-     * docker push *|name|* *|remote_host|*
-     * "Update the fields in all .yaml files with the container and remote_host names"
-     * "setup K8S access to your cluster"
-     * kubectl apply -f k8s/storage/pvc.yaml (takes a minute)
-     * kubectl apply -f k8s/basic/deployment.yaml
-     * kubectl apply -f k8s/basic/service.yml
-     * kubectl describe nodes (note the 'External IP' on one of the nodes)
-     * curl *|external_ip|*:*|port|*/noop (port will be chosen in service.yml e.g. 30001)
+* Build and push the project to Image Registry (in this case IBM Cloud)
+     ```
+        docker build -t *|name|* .
+        docker push *|name|* *|remote_host|*
 
+     ```
+* Update the `app, name` fields in all .yaml files along with the `container and remote host names`"
+* Now, setup access to your K8S Cluster from your cluster. We are using `kubectl` in this case
+        ```
+            ibmcloud login -a cloud.ibm.com -r us-south -g default -sso
+            ibmcloud ks cluster-config --cluster <cluster-name>
+            export ...
+            kubectl get nodes
+        ```
+* Create a Persisten Volume Claim. Make sure your account has access to IBM Storage and your pvc file has been configured. This will take a couple of minutes. Wait until it finishes. 
+        ```
+            kubectl apply -f k8s/storage/pvc.yaml.
+        ```
+* Apply deployment and service files to K8S. Make sure all `name, app` fields are changed to your preference. 
+        ```
+            kubectl apply -f k8s/basic/deployment.yaml
+            kubectl apply -f k8s/basic/service.yml
+        ```
+* To run the project, use External IP of one of the nodes and a service PORT that you defined. Port is defined in service.yaml. Change Port number if it collides with other service.
+        ```
+            kubectl describe nodes
+            curl *|external_ip|*:*|port|*/noop
+        ```
 
 You can setup the ingress to work with your service. Then, you can access your service using the hostname provided in your ingress.yaml file. e.g `curl example.us-south.containers.appdomain.cloud/noop`
 
@@ -37,17 +54,17 @@ service.yml - Exposes your deployment/pods to the outside world. 5 digit port nu
 
 
 1. Noop
-- Endpoint:                               'hostname':30002/noop
+- Endpoint:                               'hostname':'port'/noop
 - Type:                                   GET
 - Return:                                 204
 
 2. Create Jobs
-- Endpoint:                               'hostname':30002/jobs
+- Endpoint:                               'hostname':'port'/jobs
 - Type:                                   POST
 - Return:                                 200, JSON with status
 
 3. Check Notification Job ID
-- Endpoint:                               'hostname':30002/jobs/<job-id>
+- Endpoint:                               'hostname':'port'/jobs/<job-id>
 - Type:                                   GET
 - Return:                                 200, JSON with status
 
