@@ -14,24 +14,33 @@
      ```
 * Update the `app, name` fields in all .yaml files along with the `container and remote host names`"
 * Now, setup access to your K8S Cluster from your cluster. We are using `kubectl` in this case
+
         ```
             ibmcloud login -a cloud.ibm.com -r us-south -g default -sso
+
             ibmcloud ks cluster-config --cluster <cluster-name>
+
             export ...
+
             kubectl get nodes
         ```
-* Create a Persisten Volume Claim. Make sure your account has access to IBM Storage and your pvc file has been configured. This will take a couple of minutes. Wait until it finishes. 
+* Create a Persisten Volume Claim. Make sure your account has access to IBM Storage and your pvc file has been configured. This will take a couple of minutes. Wait until it finishes.
+
         ```
             kubectl apply -f k8s/storage/pvc.yaml.
         ```
 * Apply deployment and service files to K8S. Make sure all `name, app` fields are changed to your preference. 
+
         ```
             kubectl apply -f k8s/basic/deployment.yaml
+            
             kubectl apply -f k8s/basic/service.yml
         ```
 * To run the project, use External IP of one of the nodes and a service PORT that you defined. Port is defined in service.yaml. Change Port number if it collides with other service.
+
         ```
             kubectl describe nodes
+
             curl *|external_ip|*:*|port|*/noop
         ```
 
